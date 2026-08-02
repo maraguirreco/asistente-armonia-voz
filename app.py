@@ -5,15 +5,8 @@ from collections import Counter
 
 st.set_page_config(page_title="Asistente de Armonía", page_icon="🎵")
 
-st.title("🎙️ Asistente de Armonía Adaptativo")
-st.write("Analizamos tu melodía y tu registro vocal para darte acordes cómodos para tu voz.")
-
-# 1. Configuración de Instrumento
-instrumento = st.radio(
-    "Selecciona tu instrumento:",
-    ["🎹 Estándar (Piano / Guitarra)", "🪕 Modo Ukelele"],
-    horizontal=True
-)
+st.title("🎙️ Asistente de Armonía por Voz")
+st.write("Analizamos tu melodía y tu registro vocal para darte acordes acordes a tu tono.")
 
 audio_file = st.file_uploader("Sube un audio (.wav o .mp3)", type=["wav", "mp3"])
 recorded_audio = st.audio_input("O graba tu voz directamente:")
@@ -21,16 +14,6 @@ recorded_audio = st.audio_input("O graba tu voz directamente:")
 target_audio = recorded_audio if recorded_audio else audio_file
 
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-
-UKULELE_FINGERINGS = {
-    'C': '0 - 0 - 0 - 3',   'C#': '1 - 1 - 1 - 4', 'D': '2 - 2 - 2 - 0',
-    'D#': '3 - 3 - 3 - 1',  'E': '1 - 4 - 0 - 2',   'F': '2 - 0 - 1 - 0',
-    'F#': '3 - 1 - 2 - 1',  'G': '0 - 2 - 3 - 2',   'G#': '5 - 3 - 4 - 3',
-    'A': '2 - 1 - 0 - 0',   'A#': '3 - 2 - 1 - 1',  'B': '4 - 3 - 2 - 2',
-    'Cm': '0 - 3 - 3 - 3',  'Dm': '2 - 2 - 1 - 0',  'Em': '0 - 4 - 3 - 2',
-    'Fm': '1 - 0 - 1 - 3',  'Gm': '0 - 2 - 3 - 1',  'Am': '2 - 0 - 0 - 0',
-    'Bm': '2 - 2 - 2 - 2'
-}
 
 def hz_to_note_info(frequency):
     if frequency <= 0 or np.isnan(frequency):
@@ -47,9 +30,6 @@ def get_vocal_range(avg_hz):
         return "Medio (Tenor / Mezzosoprano)", "✨ Tono Equilibrado / Natural"
     else:
         return "Agudo (Soprano / Tenor Alto)", "🚀 Tono Brillante / Agudo"
-
-def get_uke_pos(chord_name):
-    return UKULELE_FINGERINGS.get(chord_name, "Trastes estándar")
 
 if target_audio:
     st.audio(target_audio)
@@ -98,36 +78,15 @@ if target_audio:
                 st.markdown("---")
                 st.markdown("### 🎼 Progresiones Adaptadas")
 
-                if "Ukelele" in instrumento:
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.subheader("🪕 Pop / Acoustic")
-                        st.markdown(f"**Acordes:** `{tonic_note} ➔ {dom} ➔ {rel_m} ➔ {sub_d}`")
-                        st.code(
-                            f"{tonic_note}: [{get_uke_pos(tonic_note)}]\n"
-                            f"{dom}: [{get_uke_pos(dom)}]\n"
-                            f"{rel_m}: [{get_uke_pos(rel_m)}]\n"
-                            f"{sub_d}: [{get_uke_pos(sub_d)}]"
-                        )
-                    with col2:
-                        st.subheader("🌴 Chill / Reggae")
-                        st.markdown(f"**Acordes:** `{tonic_note} ➔ {sub_d} ➔ {dom} ➔ {tonic_note}`")
-                        st.code(
-                            f"{tonic_note}: [{get_uke_pos(tonic_note)}]\n"
-                            f"{sub_d}: [{get_uke_pos(sub_d)}]\n"
-                            f"{dom}: [{get_uke_pos(dom)}]\n"
-                            f"{tonic_note}: [{get_uke_pos(tonic_note)}]"
-                        )
-                else:
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        st.subheader("Pop Comercial")
-                        st.info(f"**{tonic_note} ➔ {dom} ➔ {rel_m} ➔ {sub_d}**")
-                    with col2:
-                        st.subheader("Balada / Triste")
-                        st.warning(f"**{rel_m} ➔ {sub_d} ➔ {tonic_note} ➔ {dom}**")
-                    with col3:
-                        st.subheader("Jazzy / Neo-Soul")
-                        st.success(f"**{tonic_note}maj7 ➔ {sub_d}maj7 ➔ {rel_m}7 ➔ {dom}7**")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.subheader("Pop Comercial")
+                    st.info(f"**{tonic_note} ➔ {dom} ➔ {rel_m} ➔ {sub_d}**")
+                with col2:
+                    st.subheader("Balada / Triste")
+                    st.warning(f"**{rel_m} ➔ {sub_d} ➔ {tonic_note} ➔ {dom}**")
+                with col3:
+                    st.subheader("Jazzy / Neo-Soul")
+                    st.success(f"**{tonic_note}maj7 ➔ {sub_d}maj7 ➔ {rel_m}7 ➔ {dom}7**")
             else:
                 st.error("No se detectó una melodía clara. Intenta tararear con mayor volumen.")
